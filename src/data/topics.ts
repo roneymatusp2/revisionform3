@@ -1,5 +1,3 @@
-import { topics } from './topics';
-
 export interface Subtopic {
   id: string;
   title: string;

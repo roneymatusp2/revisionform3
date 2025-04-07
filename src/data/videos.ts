@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { videoLinks } from './videos';
 
 // Updated video resources based on the provided math topics
 const videos = {
@@ -256,4 +255,5 @@ const videos = {
   }
 };
 
+export { videos };
 export default videos;

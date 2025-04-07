@@ -1,4 +1,3 @@
-import { pdfLinks } from './pdfs';
 import { resourceLinks } from './externalResources';
 
 // Updated data structure to include resources from SaveMyExams, Corbett Maths, and other resources with direct links
@@ -208,4 +207,5 @@ const pdfs = {
   }
 };
 
+export { pdfs };
 export default pdfs;
