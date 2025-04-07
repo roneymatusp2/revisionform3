@@ -1,0 +1,261 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #10b981;
+  --accent-color: #8b5cf6;
+  --background-color: #f9fafb;
+  --text-color: #1f2937;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Enhanced Math-themed styling */
+.math-bg-pattern {
+  background-color: #f9fafb;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234f46e5' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Mathematical graph paper background */
+.math-graph-paper {
+  background-color: #ffffff;
+  background-image: linear-gradient(rgba(79, 70, 229, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(79, 70, 229, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Grid pattern for math sections */
+.math-grid {
+  position: relative;
+}
+
+.math-grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+  background-size: 25px 25px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Golden ratio based container */
+.golden-container {
+  max-width: 1618px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Fibonacci spacing utility */
+.fib-spacing > * + * {
+  margin-top: 1.618rem;
+}
+
+/* Mathematical symbols animation */
+@keyframes mathSymbols {
+  0% { content: "+"; }
+  20% { content: "−"; }
+  40% { content: "×"; }
+  60% { content: "÷"; }
+  80% { content: "="; }
+  100% { content: "+"; }
+}
+
+.math-loading::after {
+  content: "+";
+  animation: mathSymbols 2s infinite;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+/* Math formula styling */
+.math-formula {
+  font-family: 'Cambria Math', Georgia, serif;
+  line-height: 1.5;
+  padding: 1rem;
+  background: rgba(79, 70, 229, 0.05);
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Math fraction styling */
+.math-fraction {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.math-fraction-top {
+  border-bottom: 1px solid currentColor;
+  padding: 0 0.25rem;
+}
+
+.math-fraction-bottom {
+  padding: 0 0.25rem;
+}
+
+/* Fancy topic card with hover effects */
+.topic-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.topic-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.topic-card .topic-icon {
+  transition: transform 0.5s ease;
+}
+
+.topic-card:hover .topic-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Animated underline for links */
+.animated-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+.animated-underline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+
+.animated-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Responsive video container */
+.aspect-w-16 {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+}
+
+.aspect-w-16 iframe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a5b4fc;
+}
+
+/* Light pulsing animation for attention */
+@keyframes pulse-light {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.pulse-light {
+  animation: pulse-light 3s infinite;
+}
+
+/* Mathematics symbols decorative elements */
+.math-symbol-decorative {
+  font-family: 'Cambria Math', Georgia, serif;
+  opacity: 0.07;
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Footer styling */
+.footer-text {
+  font-size: 0.75rem;
+  color: #888888;
+  font-style: italic;
+  text-align: right;
+  padding: 1rem;
+}
+
+/* Calculator button styling */
+.calc-button {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.calc-button:active {
+  transform: scale(0.95);
+}
+
+/* Golden ratio themed spacing */
+.golden-mt {
+  margin-top: 1.618rem;
+}
+
+.golden-mb {
+  margin-bottom: 1.618rem;
+}
+
+.golden-my {
+  margin-top: 1.618rem;
+  margin-bottom: 1.618rem;
+}
