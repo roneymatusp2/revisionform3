@@ -1,0 +1,33 @@
+{
+  "files": {
+    "main.css": "/arevisionrevision/static/css/main.e5478925.css",
+    "main.js": "/arevisionrevision/static/js/main.6a8b3b63.js",
+    "static/js/20.22584d7e.chunk.js": "/arevisionrevision/static/js/20.22584d7e.chunk.js",
+    "static/js/130.9b9749a2.chunk.js": "/arevisionrevision/static/js/130.9b9749a2.chunk.js",
+    "static/js/184.49339ff8.chunk.js": "/arevisionrevision/static/js/184.49339ff8.chunk.js",
+    "static/js/661.09bab148.chunk.js": "/arevisionrevision/static/js/661.09bab148.chunk.js",
+    "static/js/840.bb6e1304.chunk.js": "/arevisionrevision/static/js/840.bb6e1304.chunk.js",
+    "static/js/290.0fbf6089.chunk.js": "/arevisionrevision/static/js/290.0fbf6089.chunk.js",
+    "static/js/502.a9959edb.chunk.js": "/arevisionrevision/static/js/502.a9959edb.chunk.js",
+    "static/js/139.be86e919.chunk.js": "/arevisionrevision/static/js/139.be86e919.chunk.js",
+    "static/js/453.c32d9d7a.chunk.js": "/arevisionrevision/static/js/453.c32d9d7a.chunk.js",
+    "static/js/460.495b6c9f.chunk.js": "/arevisionrevision/static/js/460.495b6c9f.chunk.js",
+    "index.html": "/arevisionrevision/index.html",
+    "main.e5478925.css.map": "/arevisionrevision/static/css/main.e5478925.css.map",
+    "main.6a8b3b63.js.map": "/arevisionrevision/static/js/main.6a8b3b63.js.map",
+    "20.22584d7e.chunk.js.map": "/arevisionrevision/static/js/20.22584d7e.chunk.js.map",
+    "130.9b9749a2.chunk.js.map": "/arevisionrevision/static/js/130.9b9749a2.chunk.js.map",
+    "184.49339ff8.chunk.js.map": "/arevisionrevision/static/js/184.49339ff8.chunk.js.map",
+    "661.09bab148.chunk.js.map": "/arevisionrevision/static/js/661.09bab148.chunk.js.map",
+    "840.bb6e1304.chunk.js.map": "/arevisionrevision/static/js/840.bb6e1304.chunk.js.map",
+    "290.0fbf6089.chunk.js.map": "/arevisionrevision/static/js/290.0fbf6089.chunk.js.map",
+    "502.a9959edb.chunk.js.map": "/arevisionrevision/static/js/502.a9959edb.chunk.js.map",
+    "139.be86e919.chunk.js.map": "/arevisionrevision/static/js/139.be86e919.chunk.js.map",
+    "453.c32d9d7a.chunk.js.map": "/arevisionrevision/static/js/453.c32d9d7a.chunk.js.map",
+    "460.495b6c9f.chunk.js.map": "/arevisionrevision/static/js/460.495b6c9f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e5478925.css",
+    "static/js/main.6a8b3b63.js"
+  ]
+}
