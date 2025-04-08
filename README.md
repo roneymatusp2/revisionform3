@@ -12,8 +12,7 @@ A comprehensive website for Form 3 students preparing for Cambridge IGCSE™ Int
 
 ## Deployment
 
-This website is deployed using GitHub Pages and can be accessed at:
-[https://roneymatusp2.github.io/arevisionrevision](https://roneymatusp2.github.io/arevisionrevision)
+This website is deployed using Netlify.
 
 ## Development
 
@@ -29,19 +28,33 @@ npm start
 
 ## Deployment Instructions
 
-To deploy updates to GitHub Pages:
+### Deploy to Netlify
+
+#### Option 1: Using Netlify CLI
 
 ```bash
-# Run the deployment script
-./deploy.bat
+# Install Netlify CLI
+npm install -g netlify-cli
+
+# Login to Netlify
+netlify login
+
+# Initialize your site (first time only)
+netlify init
+
+# Deploy to production
+netlify deploy --prod
 ```
 
-Or manually:
+#### Option 2: Using Netlify UI
 
-```bash
-# Install gh-pages package
-npm install --save-dev gh-pages
+1. Push your code to GitHub
+2. Go to [Netlify](https://app.netlify.com/)
+3. Click "Add new site" > "Import an existing project"
+4. Connect to your GitHub repository
+5. Configure build settings:
+   - Build command: `npm run build`
+   - Publish directory: `build`
+6. Click "Deploy site"
 
-# Build and deploy
-npm run deploy
-```
+The site will be deployed and Netlify will provide you with a URL. You can also set up a custom domain in the Netlify settings.

@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { createHashRouter, RouterProvider, createRoutesFromElements, Route, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, createRoutesFromElements, Route, Outlet } from 'react-router-dom';
 import Layout from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { LoadingSpinner } from './components/LoadingSpinner';
@@ -24,7 +24,7 @@ const MainLayout = () => {
     );
 };
 
-const router = createHashRouter(
+const router = createBrowserRouter(
     createRoutesFromElements(
         <Route element={<MainLayout />}>
             <Route
