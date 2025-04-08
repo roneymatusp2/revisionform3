@@ -268,8 +268,8 @@ const TeacherAdminPage = () => {
   // Get subtopics for selected topic
   const getSubtopics = () => {
     if (!selectedTopic) return [];
-    const topic = topics.find(t => t.id === selectedTopic);
-    return topic ? topic.subtopics : [];
+    const topic = topics.find(t => t.$id === selectedTopic);
+    return topic && topic.subtopics ? topic.subtopics : [];
   };
 
   // Display resource type with appropriate link or preview
@@ -375,7 +375,7 @@ const TeacherAdminPage = () => {
                   >
                     <option value="">Select a topic</option>
                     {topics.map(topic => (
-                      <option key={topic.id} value={topic.id}>{topic.title}</option>
+                      <option key={topic.$id} value={topic.$id}>{topic.name}</option>
                     ))}
                   </select>
                 </div>
@@ -393,7 +393,7 @@ const TeacherAdminPage = () => {
                   >
                     <option value="">Select a subtopic</option>
                     {getSubtopics().map(subtopic => (
-                      <option key={subtopic.id} value={subtopic.id}>{subtopic.title}</option>
+                      <option key={subtopic.$id} value={subtopic.$id}>{subtopic.name}</option>
                     ))}
                   </select>
                 </div>
@@ -520,10 +520,10 @@ const TeacherAdminPage = () => {
                     {resources.map((resource, index) => (
                       <tr key={index}>
                         <td className="py-2 px-4 border-b border-gray-200">
-                          {topics.find(t => t.id === resource.topic)?.title || resource.topic}
+                          {topics.find(t => t.$id === resource.topic)?.name || resource.topic}
                         </td>
                         <td className="py-2 px-4 border-b border-gray-200">
-                          {topics.find(t => t.id === resource.topic)?.subtopics.find(s => s.id === resource.subtopic)?.title || resource.subtopic}
+                          {topics.find(t => t.$id === resource.topic)?.subtopics?.find(s => s.$id === resource.subtopic)?.name || resource.subtopic}
                         </td>
                         <td className="py-2 px-4 border-b border-gray-200">{resource.title}</td>
                         <td className="py-2 px-4 border-b border-gray-200">

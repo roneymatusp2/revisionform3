@@ -1,202 +1,196 @@
-import { Storage, Databases, Query, ID } from 'appwrite';
-import { APPWRITE_CONFIG, client } from '../config/appwrite';
+import { Client, Databases, Storage, ID, Models, Query } from 'appwrite';
+import config from '../config/appwrite';
+import { MigrationResult, migrateTopics } from '../utils/appwriteMigration';
 
-const storage = new Storage(client);
+const client = new Client()
+    .setEndpoint(config.endpoint)
+    .setProject(config.projectId);
+
 const databases = new Databases(client);
+const storage = new Storage(client);
 
-const {
-    databaseId: DATABASE_ID,
-    collections: { topics: TOPICS_COLLECTION, subtopics: SUBTOPICS_COLLECTION, resources: RESOURCES_COLLECTION },
-    buckets: { pdfs: PDF_BUCKET }
-} = APPWRITE_CONFIG;
+interface Topic extends Models.Document {
+    name: string;
+    slug: string;
+}
+
+interface Subtopic extends Models.Document {
+    name: string;
+    slug: string;
+    topicId: string;
+}
+
+interface Resource extends Models.Document {
+    title: string;
+    fileId: string;
+    subtopicId: string;
+    resourceType: 'question' | 'answer' | 'reference' | 'video';
+}
 
 export const AppwriteService = {
-    // Topics
-    async getTopics() {
+    async getTopics(): Promise<Topic[]> {
         try {
             const response = await databases.listDocuments(
-                DATABASE_ID,
-                TOPICS_COLLECTION
+                config.databaseId,
+                config.topicsCollectionId
             );
-            return response.documents;
-        } catch (error) {
-            console.error('Error fetching topics:', error);
-            throw new Error('Failed to fetch topics. Please try again later.');
+            return response.documents as Topic[];
+        } catch (err) {
+            console.error('Error fetching topics:', err);
+            throw err;
         }
     },
 
-    async getTopic(topicId: string) {
+    async getTopic(topicId: string): Promise<Topic> {
         try {
-            return await databases.getDocument(
-                DATABASE_ID,
-                TOPICS_COLLECTION,
+            const response = await databases.getDocument(
+                config.databaseId,
+                config.topicsCollectionId,
                 topicId
             );
-        } catch (error) {
-            console.error('Error fetching topic:', error);
-            throw new Error('Failed to fetch topic. Please try again later.');
+            return response as Topic;
+        } catch (err) {
+            console.error('Error fetching topic:', err);
+            throw err;
         }
     },
 
-    // Subtopics
-    async getSubtopicsByTopic(topicId: string) {
+    async createTopic(data: { name: string; slug: string }): Promise<Topic> {
+        try {
+            const response = await databases.createDocument(
+                config.databaseId,
+                config.topicsCollectionId,
+                ID.unique(),
+                data
+            );
+            return response as Topic;
+        } catch (err) {
+            console.error('Error creating topic:', err);
+            throw err;
+        }
+    },
+
+    async getSubtopicsByTopic(topicId: string): Promise<Subtopic[]> {
         try {
             const response = await databases.listDocuments(
-                DATABASE_ID,
-                SUBTOPICS_COLLECTION,
+                config.databaseId,
+                config.subtopicsCollectionId,
                 [Query.equal('topicId', topicId)]
             );
-            return response.documents;
-        } catch (error) {
-            console.error('Error fetching subtopics:', error);
-            throw new Error('Failed to fetch subtopics. Please try again later.');
+            return response.documents as Subtopic[];
+        } catch (err) {
+            console.error('Error fetching subtopics:', err);
+            throw err;
         }
     },
 
-    async getSubtopic(subtopicId: string) {
+    async getSubtopic(subtopicId: string): Promise<Subtopic> {
         try {
-            return await databases.getDocument(
-                DATABASE_ID,
-                SUBTOPICS_COLLECTION,
+            const response = await databases.getDocument(
+                config.databaseId,
+                config.subtopicsCollectionId,
                 subtopicId
             );
-        } catch (error) {
-            console.error('Error fetching subtopic:', error);
-            throw new Error('Failed to fetch subtopic. Please try again later.');
+            return response as Subtopic;
+        } catch (err) {
+            console.error('Error fetching subtopic:', err);
+            throw err;
         }
     },
 
-    // Resources
-    async getResourcesBySubtopic(subtopicId: string) {
+    async createSubtopic(data: { name: string; slug: string; topicId: string }): Promise<Subtopic> {
+        try {
+            const response = await databases.createDocument(
+                config.databaseId,
+                config.subtopicsCollectionId,
+                ID.unique(),
+                data
+            );
+            return response as Subtopic;
+        } catch (err) {
+            console.error('Error creating subtopic:', err);
+            throw err;
+        }
+    },
+
+    async getResourcesBySubtopic(subtopicId: string): Promise<Resource[]> {
         try {
             const response = await databases.listDocuments(
-                DATABASE_ID,
-                RESOURCES_COLLECTION,
+                config.databaseId,
+                config.resourcesCollectionId,
                 [Query.equal('subtopicId', subtopicId)]
             );
-            return response.documents;
-        } catch (error) {
-            console.error('Error fetching resources:', error);
-            throw new Error('Failed to fetch resources. Please try again later.');
+            return response.documents as Resource[];
+        } catch (err) {
+            console.error('Error fetching resources:', err);
+            throw err;
         }
     },
 
-    async getResourcesByType(subtopicId: string, resourceType: string) {
+    async createResource(data: {
+        title: string;
+        subtopicId: string;
+        resourceType: Resource['resourceType'];
+        fileId: string;
+    }): Promise<Resource> {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                RESOURCES_COLLECTION,
-                [
-                    Query.equal('subtopicId', subtopicId),
-                    Query.equal('resourceType', resourceType)
-                ]
+            const response = await databases.createDocument(
+                config.databaseId,
+                config.resourcesCollectionId,
+                ID.unique(),
+                data
             );
-            return response.documents;
-        } catch (error) {
-            console.error('Error fetching resources by type:', error);
-            throw new Error('Failed to fetch resources. Please try again later.');
+            return response as Resource;
+        } catch (err) {
+            console.error('Error creating resource:', err);
+            throw err;
         }
     },
 
-    // File operations
-    getFileView(fileId: string) {
-        return storage.getFileView(PDF_BUCKET, fileId);
-    },
-
-    async uploadFile(file: File, title: string, subtopicId: string, resourceType: string) {
+    async uploadFile(file: File): Promise<string> {
         try {
-            // Upload file to storage
-            const uploadedFile = await storage.createFile(
-                PDF_BUCKET,
+            const response = await storage.createFile(
+                config.bucketId,
                 ID.unique(),
                 file
             );
+            return response.$id;
+        } catch (err) {
+            console.error('Error uploading file:', err);
+            throw err;
+        }
+    },
 
-            // Create resource document
-            const resource = await databases.createDocument(
-                DATABASE_ID,
-                RESOURCES_COLLECTION,
-                ID.unique(),
-                {
-                    title,
-                    type: 'pdf',
-                    fileId: uploadedFile.$id,
-                    subtopicId,
-                    resourceType
+    async deleteFile(fileId: string): Promise<void> {
+        try {
+            await storage.deleteFile(config.bucketId, fileId);
+        } catch (err) {
+            console.error('Error deleting file:', err);
+            throw err;
+        }
+    },
+
+    getFileView(fileId: string): string {
+        return storage.getFileView(config.bucketId, fileId).toString();
+    },
+
+    async migrateContent(): Promise<MigrationResult> {
+        try {
+            return await migrateTopics();
+        } catch (error) {
+            console.error('Migration failed:', error);
+            return {
+                success: false,
+                message: error instanceof Error ? error.message : 'Migration failed',
+                stats: {
+                    topics: 0,
+                    subtopics: 0,
+                    resources: 0,
+                    failed: 1
                 }
-            );
-
-            return resource;
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            throw new Error('Failed to upload file. Please try again later.');
-        }
-    },
-
-    async deleteResource(resourceId: string, fileId: string) {
-        try {
-            // Delete the file from storage
-            await storage.deleteFile(PDF_BUCKET, fileId);
-
-            // Delete the resource document
-            await databases.deleteDocument(
-                DATABASE_ID,
-                RESOURCES_COLLECTION,
-                resourceId
-            );
-
-            return true;
-        } catch (error) {
-            console.error('Error deleting resource:', error);
-            throw new Error('Failed to delete resource. Please try again later.');
-        }
-    },
-
-    async createTopic({ name, slug }: { name: string; slug: string }) {
-        try {
-            return await databases.createDocument(
-                DATABASE_ID,
-                TOPICS_COLLECTION,
-                ID.unique(),
-                { name, slug }
-            );
-        } catch (error) {
-            console.error('Error creating topic:', error);
-            throw new Error('Failed to create topic. Please try again later.');
-        }
-    },
-
-    async createSubtopic({ name, slug, topicId }: { name: string; slug: string; topicId: string }) {
-        try {
-            return await databases.createDocument(
-                DATABASE_ID,
-                SUBTOPICS_COLLECTION,
-                ID.unique(),
-                { name, slug, topicId }
-            );
-        } catch (error) {
-            console.error('Error creating subtopic:', error);
-            throw new Error('Failed to create subtopic. Please try again later.');
-        }
-    },
-
-    async createVideoResource({ title, url, subtopicId }: { title: string; url: string; subtopicId: string }) {
-        try {
-            return await databases.createDocument(
-                DATABASE_ID,
-                RESOURCES_COLLECTION,
-                ID.unique(),
-                {
-                    title,
-                    type: 'video',
-                    fileId: url,
-                    subtopicId,
-                    resourceType: 'videos'
-                }
-            );
-        } catch (error) {
-            console.error('Error creating video resource:', error);
-            throw new Error('Failed to create video resource. Please try again later.');
+            };
         }
     }
-}; 
+};
+
+export default AppwriteService; 

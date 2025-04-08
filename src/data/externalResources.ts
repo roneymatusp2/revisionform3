@@ -32,7 +32,7 @@ export const videoLinks = {
   // Number and Algebra
   numberAlgebra: {
     // Topic 1: Natural numbers, integers, etc.
-    numberTypes: [
+    numberTypes: [/*  */
       "https://www.youtube.com/embed/-QHff5pRdM8", // How to Classify Numbers
       "https://www.youtube.com/embed/BeQzNT7f7NY", // Types Of Numbers - FuseSchool
       "https://www.youtube.com/embed/mIStB5X4U8M", // Prime numbers - Khan Academy

@@ -1,19 +1,101 @@
-import { ID } from 'appwrite';
 import { AppwriteService } from '../services/appwriteService';
-import { topics } from '../data/topics';
-import { pdfs } from '../data/pdfs';
-import { videos } from '../data/videos';
+import topics from '../data/topics';
 
-export const migrateContent = async () => {
+interface MigrationTopic {
+    name: string;
+    slug: string;
+    subtopics: MigrationSubtopic[];
+}
+
+interface MigrationSubtopic {
+    name: string;
+    slug: string;
+    resources: MigrationResource[];
+}
+
+interface MigrationResource {
+    title: string;
+    fileId: string;
+    resourceType: 'question' | 'answer' | 'reference' | 'video';
+}
+
+export interface MigrationResult {
+    success: boolean;
+    message: string;
+    stats: {
+        topics: number;
+        subtopics: number;
+        resources: number;
+        failed: number;
+    };
+}
+
+export async function migrateTopics(): Promise<MigrationResult> {
+    const stats = {
+        topics: 0,
+        subtopics: 0,
+        resources: 0,
+        failed: 0
+    };
+
     try {
-        let migratedCount = {
-            topics: 0,
-            subtopics: 0,
-            pdfs: 0,
-            videos: 0
-        };
+        // Migrate topics and their subtopics
+        for (const topic of topics) {
+            try {
+                // Create topic
+                await AppwriteService.createTopic({
+                    name: topic.name,
+                    slug: topic.slug
+                });
+                stats.topics++;
 
-        // Migrate topics
+                // Create subtopics for this topic
+                if (topic.subtopics) {
+                    for (const subtopic of topic.subtopics) {
+                        try {
+                            await AppwriteService.createSubtopic({
+                                name: subtopic.name,
+                                slug: subtopic.slug,
+                                topicId: topic.$id
+                            });
+                            stats.subtopics++;
+                        } catch (error) {
+                            console.error(`Failed to create subtopic ${subtopic.name}:`, error);
+                            stats.failed++;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(`Failed to create topic ${topic.name}:`, error);
+                stats.failed++;
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Migration completed successfully',
+            stats
+        };
+    } catch (error) {
+        console.error('Migration failed:', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Migration failed',
+            stats
+        };
+    }
+}
+
+export const migrateContent = async (): Promise<MigrationResult> => {
+    const migratedCount = {
+        topics: 0,
+        subtopics: 0,
+        resources: 0
+    };
+
+    try {
+        const topics: MigrationTopic[] = []; // Replace with your actual data source
+
         for (const topic of topics) {
             try {
                 const topicDoc = await AppwriteService.createTopic({
@@ -23,7 +105,6 @@ export const migrateContent = async () => {
 
                 migratedCount.topics++;
 
-                // Migrate subtopics for this topic
                 for (const subtopic of topic.subtopics) {
                     try {
                         const subtopicDoc = await AppwriteService.createSubtopic({
@@ -34,41 +115,18 @@ export const migrateContent = async () => {
 
                         migratedCount.subtopics++;
 
-                        // Migrate PDFs for this subtopic
-                        const subtopicPdfs = pdfs.filter(pdf => pdf.subtopic === subtopic.slug);
-                        for (const pdf of subtopicPdfs) {
+                        for (const resource of subtopic.resources) {
                             try {
-                                // Download PDF from current location
-                                const response = await fetch(pdf.url);
-                                const pdfBlob = await response.blob();
-                                const file = new File([pdfBlob], `${pdf.title}.pdf`, { type: 'application/pdf' });
-
-                                await AppwriteService.uploadFile(
-                                    file,
-                                    pdf.title,
-                                    subtopicDoc.$id,
-                                    pdf.type
-                                );
-
-                                migratedCount.pdfs++;
-                            } catch (error) {
-                                console.error(`Failed to migrate PDF ${pdf.title}:`, error);
-                            }
-                        }
-
-                        // Migrate videos for this subtopic
-                        const subtopicVideos = videos.filter(video => video.subtopic === subtopic.slug);
-                        for (const video of subtopicVideos) {
-                            try {
-                                await AppwriteService.createVideoResource({
-                                    title: video.title,
-                                    url: video.url,
-                                    subtopicId: subtopicDoc.$id
+                                await AppwriteService.createResource({
+                                    title: resource.title,
+                                    fileId: resource.fileId,
+                                    subtopicId: subtopicDoc.$id,
+                                    resourceType: resource.resourceType
                                 });
 
-                                migratedCount.videos++;
+                                migratedCount.resources++;
                             } catch (error) {
-                                console.error(`Failed to migrate video ${video.title}:`, error);
+                                console.error(`Failed to migrate resource ${resource.title}:`, error);
                             }
                         }
                     } catch (error) {
@@ -82,13 +140,24 @@ export const migrateContent = async () => {
 
         return {
             success: true,
-            message: `Migration completed successfully! Migrated: ${migratedCount.topics} topics, ${migratedCount.subtopics} subtopics, ${migratedCount.pdfs} PDFs, ${migratedCount.videos} videos`
+            message: `Migration completed successfully. Migrated ${migratedCount.topics} topics, ${migratedCount.subtopics} subtopics, and ${migratedCount.resources} resources.`,
+            stats: {
+                topics: migratedCount.topics,
+                subtopics: migratedCount.subtopics,
+                resources: migratedCount.resources,
+                failed: 0
+            }
         };
     } catch (error) {
-        console.error('Migration failed:', error);
         return {
             success: false,
-            message: `Migration failed: ${error.message}`
+            message: `Migration failed: ${error instanceof Error ? error.message : 'Unknown error occurred'}`,
+            stats: {
+                topics: 0,
+                subtopics: 0,
+                resources: 0,
+                failed: 1
+            }
         };
     }
 }; 

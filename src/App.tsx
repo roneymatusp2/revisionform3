@@ -1,27 +1,105 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './layouts/Layout';
-import HomePage from './pages/HomePage';
-import TopicPage from './pages/TopicPage';
-import SubtopicPage from './pages/SubtopicPage';
-import ResourcesPage from './pages/ResourcesPage';
-import NotFoundPage from './pages/NotFoundPage';
-import TeacherAdminPage from './pages/TeacherAdminPage';
-import './App.css';
+import React, { Suspense } from 'react';
+import { createHashRouter, RouterProvider, createRoutesFromElements, Route, Outlet } from 'react-router-dom';
+import Layout from './components/Layout';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { LoadingSpinner } from './components/LoadingSpinner';
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout><HomePage /></Layout>} />
-        <Route path="/topic/:topicId" element={<Layout><TopicPage /></Layout>} />
-        <Route path="/topic/:topicId/:subtopicId" element={<Layout><SubtopicPage /></Layout>} />
-        <Route path="/resources" element={<Layout><ResourcesPage /></Layout>} />
-        <Route path="/teacher-admin" element={<Layout><TeacherAdminPage /></Layout>} />
-        <Route path="*" element={<Layout><NotFoundPage /></Layout>} />
-      </Routes>
-    </Router>
-  );
-}
+// Lazy load components for better performance
+const HomePage = React.lazy(() => import('./pages/HomePage'));
+const TopicList = React.lazy(() => import('./pages/TopicList'));
+const SubtopicList = React.lazy(() => import('./pages/SubtopicList'));
+const SubtopicPage = React.lazy(() => import('./pages/SubtopicPage'));
+const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+const ResourcesPage = React.lazy(() => import('./pages/ResourcesPage'));
+const TeacherAdmin = React.lazy(() => import('./pages/TeacherAdmin'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+
+const MainLayout = () => {
+    return (
+        <Layout>
+            <Suspense fallback={<LoadingSpinner />}>
+                <Outlet />
+            </Suspense>
+        </Layout>
+    );
+};
+
+const router = createHashRouter(
+    createRoutesFromElements(
+        <Route element={<MainLayout />}>
+            <Route
+                path="/"
+                element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <HomePage />
+                    </Suspense>
+                }
+            />
+            <Route
+                path="/topics"
+                element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <TopicList />
+                    </Suspense>
+                }
+            />
+            <Route
+                path="/topic/:topicId"
+                element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <SubtopicList />
+                    </Suspense>
+                }
+            />
+            <Route
+                path="/subtopic/:subtopicId"
+                element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <SubtopicPage />
+                    </Suspense>
+                }
+            />
+            <Route
+                path="/resources"
+                element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <ResourcesPage />
+                    </Suspense>
+                }
+            />
+            <Route
+                path="/teacher-admin"
+                element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <TeacherAdmin />
+                    </Suspense>
+                }
+            />
+            <Route
+                path="/admin"
+                element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <AdminDashboard />
+                    </Suspense>
+                }
+            />
+            {/* 404 Page */}
+            <Route
+                path="*"
+                element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <NotFoundPage />
+                    </Suspense>
+                }
+            />
+        </Route>
+    )
+);
+
+export const App: React.FC = () => {
+    return (
+        <RouterProvider router={router} fallbackElement={<LoadingSpinner />} />
+    );
+};
 
 export default App;

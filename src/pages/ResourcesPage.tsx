@@ -7,6 +7,8 @@ import {
   getFileView,
   RESOURCE_TYPES
 } from '../lib/appwrite';
+import { motion } from 'framer-motion';
+import { mathCurriculum } from '../data/curriculum';
 
 interface Resource {
   id?: string;
@@ -21,12 +23,19 @@ interface Resource {
   description?: string;
 }
 
-const ResourcesPage: React.FC = () => {
+interface ResourceTab {
+    id: string;
+    title: string;
+    icon: string;
+}
+
+export const ResourcesPage: React.FC = () => {
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedSubtopic, setSelectedSubtopic] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('practice');
 
   useEffect(() => {
     loadResources();
@@ -228,121 +237,140 @@ const ResourcesPage: React.FC = () => {
     return <span className="text-gray-500">No preview available</span>;
   };
 
+  const tabs: ResourceTab[] = [
+    { id: 'practice', title: 'Practice Questions', icon: '📝' },
+    { id: 'videos', title: 'Video Lessons', icon: '🎥' },
+    { id: 'worksheets', title: 'Worksheets', icon: '📄' },
+    { id: 'calculator', title: 'Calculator Tools', icon: '🔢' }
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.4 }
+    }
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-indigo-700 mb-6">Math Resources</h1>
-      
-      {loading ? (
-        <div className="flex justify-center items-center p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        </div>
-      ) : error ? (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      ) : (
-        <div>
-          {/* Filters */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div className="flex flex-wrap items-center space-x-4">
-              <div className="mb-4 sm:mb-0">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Filter by Topic
-                </label>
-                <select
-                  value={selectedTopic || ''}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSelectedTopic(value || null);
-                    setSelectedSubtopic(null);
-                  }}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                >
-                  <option value="">All Topics</option>
-                  {getTopicsWithResources().map((topic) => (
-                    <option key={topic.id} value={topic.id}>
-                      {topic.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              {selectedTopic && (
-                <div className="mb-4 sm:mb-0">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Filter by Subtopic
-                  </label>
-                  <select
-                    value={selectedSubtopic || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setSelectedSubtopic(value || null);
-                    }}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  >
-                    <option value="">All Subtopics</option>
-                    {getSubtopicsWithResources(selectedTopic).map((subtopic) => (
-                      <option key={subtopic.id} value={subtopic.id}>
-                        {subtopic.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              
-              <div className="flex-shrink-0 self-end mb-4 sm:mb-0">
-                <button
-                  onClick={resetFilters}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                  </svg>
-                  Reset Filters
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Resources Grid */}
-          {getFilteredResources().length === 0 ? (
-            <div className="text-center py-10 bg-white rounded-lg shadow-md">
-              <p className="text-gray-600 mb-2">No resources found.</p>
-              <p className="text-sm text-gray-500">Try adjusting your filters or check back later for new resources.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getFilteredResources().map((resource) => {
-                const topic = topics.find(t => t.id === resource.topic);
-                const subtopic = topic?.subtopics.find(s => s.id === resource.subtopic);
-                
-                return (
-                  <div key={resource.$id || resource.id} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-                    <div className="p-6 flex-grow">
-                      <div className="text-xs text-gray-500 font-medium mb-2">
-                        {topic?.title} &gt; {subtopic?.title}
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                        {resource.title}
-                      </h3>
-                      {resource.description && (
-                        <p className="text-gray-600 mb-4 text-sm">
-                          {resource.description}
-                        </p>
-                      )}
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
+      <div className="text-center mb-12">
+        <motion.h1 
+          className="text-4xl font-bold text-indigo-900 mb-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          Learning Resources
+        </motion.h1>
+        <motion.p 
+          className="text-lg text-gray-600"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          Explore our comprehensive collection of math learning materials
+        </motion.p>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex justify-center mb-8 space-x-4">
+        {tabs.map((tab) => (
+          <motion.button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-6 py-3 rounded-full flex items-center space-x-2 transition-colors ${
+              activeTab === tab.id
+                ? 'bg-indigo-600 text-white shadow-lg'
+                : 'bg-white text-indigo-600 hover:bg-indigo-50'
+            }`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <span className="text-xl">{tab.icon}</span>
+            <span className="font-medium">{tab.title}</span>
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.4 }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        {mathCurriculum.map((section) => (
+          <motion.div
+            key={section.id}
+            variants={itemVariants}
+            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+          >
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-indigo-900 mb-4">
+                {section.title}
+              </h3>
+              <ul className="space-y-3">
+                {section.topics.map((topic) => (
+                  <li key={topic.id} className="flex items-start">
+                    <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 mr-3">
+                      {activeTab === 'practice' && '📝'}
+                      {activeTab === 'videos' && '🎥'}
+                      {activeTab === 'worksheets' && '📄'}
+                      {activeTab === 'calculator' && '🔢'}
+                    </span>
+                    <div>
+                      <h4 className="font-medium text-gray-900">
+                        {topic.title}
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        {topic.content}
+                      </p>
                     </div>
-                    
-                    <div className="px-6 pb-6">
-                      {renderResourceContent(resource)}
-                    </div>
-                  </div>
-                );
-              })}
+                  </li>
+                ))}
+              </ul>
+              <motion.button
+                className="mt-6 w-full px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg font-medium hover:bg-indigo-100 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                View All Resources
+              </motion.button>
             </div>
-          )}
-        </div>
-      )}
-    </div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Floating Action Button */}
+      <motion.button
+        className="fixed bottom-8 right-8 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <span className="text-2xl">💡</span>
+      </motion.button>
+    </motion.div>
   );
 };
 

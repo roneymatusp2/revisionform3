@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { Models } from 'appwrite';
 import { AppwriteService } from '../services/appwriteService';
 
-interface Resource {
-    $id: string;
+interface Resource extends Models.Document {
     title: string;
-    type: string;
     fileId: string;
-    resourceType: string;
+    subtopicId: string;
+    resourceType: 'question' | 'answer' | 'reference' | 'video';
 }
 
 interface ResourceDisplayProps {
@@ -14,44 +14,26 @@ interface ResourceDisplayProps {
 }
 
 export const ResourceDisplay: React.FC<ResourceDisplayProps> = ({ subtopicId }) => {
-    const [resources, setResources] = useState<{
-        questions: Resource[];
-        answers: Resource[];
-        reference: Resource[];
-        videos: Resource[];
-    }>({
-        questions: [],
-        answers: [],
-        reference: [],
-        videos: []
-    });
+    const [resources, setResources] = useState<Resource[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchResources = async () => {
+            if (!subtopicId) {
+                setError('Invalid subtopic ID');
+                setLoading(false);
+                return;
+            }
+
             try {
                 setLoading(true);
-                const allResources = await AppwriteService.getResourcesBySubtopic(subtopicId);
-                
-                // Organize resources by type
-                const organized = {
-                    questions: [] as Resource[],
-                    answers: [] as Resource[],
-                    reference: [] as Resource[],
-                    videos: [] as Resource[]
-                };
-
-                allResources.forEach((resource: Resource) => {
-                    if (resource.resourceType in organized) {
-                        organized[resource.resourceType as keyof typeof organized].push(resource);
-                    }
-                });
-
-                setResources(organized);
+                const fetchedResources = await AppwriteService.getResourcesBySubtopic(subtopicId);
+                setResources(fetchedResources);
+                setError(null);
             } catch (err) {
-                setError('Failed to load resources');
-                console.error(err);
+                console.error('Error fetching resources:', err);
+                setError('Failed to load resources. Please try again later.');
             } finally {
                 setLoading(false);
             }
@@ -62,15 +44,13 @@ export const ResourceDisplay: React.FC<ResourceDisplayProps> = ({ subtopicId }) 
 
     const handleResourceClick = async (resource: Resource) => {
         try {
-            if (resource.type === 'pdf') {
-                const url = AppwriteService.getFileView(resource.fileId);
-                window.open(url, '_blank');
-            } else if (resource.type === 'video') {
-                window.open(resource.fileId, '_blank'); // fileId contains YouTube URL for videos
+            if (resource.fileId) {
+                const fileUrl = AppwriteService.getFileView(resource.fileId);
+                window.open(fileUrl, '_blank');
             }
         } catch (err) {
-            console.error('Error opening resource:', err);
-            setError('Failed to open resource');
+            console.error('Error accessing resource:', err);
+            setError('Failed to access resource. Please try again later.');
         }
     };
 
@@ -84,94 +64,93 @@ export const ResourceDisplay: React.FC<ResourceDisplayProps> = ({ subtopicId }) 
 
     if (error) {
         return (
-            <div className="text-red-500 p-4 text-center">
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
                 {error}
             </div>
         );
     }
 
+    if (resources.length === 0) {
+        return (
+            <div className="text-center py-12">
+                <p className="text-gray-600">No resources available for this subtopic yet.</p>
+            </div>
+        );
+    }
+
+    const questions = resources.filter(r => r.resourceType === 'question');
+    const answers = resources.filter(r => r.resourceType === 'answer');
+    const references = resources.filter(r => r.resourceType === 'reference');
+    const videos = resources.filter(r => r.resourceType === 'video');
+
     return (
         <div className="space-y-8">
-            {/* Questions Section */}
-            {resources.questions.length > 0 && (
+            {questions.length > 0 && (
                 <section>
-                    <h3 className="text-xl font-semibold mb-4">Practice Questions</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {resources.questions.map((resource) => (
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Questions</h2>
+                    <div className="space-y-4">
+                        {questions.map(resource => (
                             <button
                                 key={resource.$id}
                                 onClick={() => handleResourceClick(resource)}
-                                className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                                className="w-full text-left p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-blue-500 transition-colors"
                             >
-                                <h4 className="font-medium">{resource.title}</h4>
-                                <p className="text-sm text-gray-500">Click to open PDF</p>
+                                {resource.title}
                             </button>
                         ))}
                     </div>
                 </section>
             )}
 
-            {/* Answers Section */}
-            {resources.answers.length > 0 && (
+            {answers.length > 0 && (
                 <section>
-                    <h3 className="text-xl font-semibold mb-4">Solutions</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {resources.answers.map((resource) => (
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Answers</h2>
+                    <div className="space-y-4">
+                        {answers.map(resource => (
                             <button
                                 key={resource.$id}
                                 onClick={() => handleResourceClick(resource)}
-                                className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                                className="w-full text-left p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-blue-500 transition-colors"
                             >
-                                <h4 className="font-medium">{resource.title}</h4>
-                                <p className="text-sm text-gray-500">Click to open PDF</p>
+                                {resource.title}
                             </button>
                         ))}
                     </div>
                 </section>
             )}
 
-            {/* Reference Materials Section */}
-            {resources.reference.length > 0 && (
+            {references.length > 0 && (
                 <section>
-                    <h3 className="text-xl font-semibold mb-4">Reference Materials</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {resources.reference.map((resource) => (
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">References</h2>
+                    <div className="space-y-4">
+                        {references.map(resource => (
                             <button
                                 key={resource.$id}
                                 onClick={() => handleResourceClick(resource)}
-                                className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                                className="w-full text-left p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-blue-500 transition-colors"
                             >
-                                <h4 className="font-medium">{resource.title}</h4>
-                                <p className="text-sm text-gray-500">Click to open PDF</p>
+                                {resource.title}
                             </button>
                         ))}
                     </div>
                 </section>
             )}
 
-            {/* Videos Section */}
-            {resources.videos.length > 0 && (
+            {videos.length > 0 && (
                 <section>
-                    <h3 className="text-xl font-semibold mb-4">Video Lessons</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {resources.videos.map((resource) => (
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Videos</h2>
+                    <div className="space-y-4">
+                        {videos.map(resource => (
                             <button
                                 key={resource.$id}
                                 onClick={() => handleResourceClick(resource)}
-                                className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                                className="w-full text-left p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-blue-500 transition-colors"
                             >
-                                <h4 className="font-medium">{resource.title}</h4>
-                                <p className="text-sm text-gray-500">Click to watch video</p>
+                                {resource.title}
                             </button>
                         ))}
                     </div>
                 </section>
-            )}
-
-            {Object.values(resources).every(arr => arr.length === 0) && (
-                <div className="text-center text-gray-500 py-8">
-                    No resources available for this topic yet.
-                </div>
             )}
         </div>
     );

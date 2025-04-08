@@ -1,88 +1,88 @@
-import { storage, databases, COLLECTION_IDS, BUCKET_IDS, DATABASE_IDS } from '../config/appwrite';
-import { ID } from 'appwrite';
+import { ID, Query, Models } from 'appwrite';
+import { databases, storage, COLLECTION_IDS, BUCKET_IDS, DATABASE_IDS } from '../config/appwrite';
 
-export interface PDFDocument {
-    $id?: string;
+export interface PDFDocument extends Models.Document {
     title: string;
-    topicId: string;
-    subtopicId: string;
     fileId: string;
-    type: 'questions' | 'answers' | 'reference';
-    url?: string;
+    subtopicId: string;
+    type: 'question' | 'answer' | 'reference';
 }
 
 export const pdfService = {
-    async uploadPDF(file: File): Promise<string> {
+    async uploadPDF(file: File, title: string, subtopicId: string, type: PDFDocument['type']): Promise<PDFDocument> {
         try {
-            const response = await storage.createFile(
+            // Upload file to storage
+            const fileUpload = await storage.createFile(
                 BUCKET_IDS.MATH_PDFS,
                 ID.unique(),
                 file
             );
-            return response.$id;
-        } catch (error) {
-            console.error('Error uploading PDF:', error);
-            throw error;
-        }
-    },
 
-    async createPDFDocument(document: PDFDocument): Promise<PDFDocument> {
-        try {
-            const response = await databases.createDocument(
+            if (!fileUpload.$id) {
+                throw new Error('File upload failed');
+            }
+
+            // Create document in database
+            const document = await databases.createDocument<PDFDocument>(
                 DATABASE_IDS.MATH_REVISION,
                 COLLECTION_IDS.PDFS,
                 ID.unique(),
-                document
+                {
+                    title,
+                    fileId: fileUpload.$id,
+                    subtopicId,
+                    type
+                }
             );
-            return response as PDFDocument;
-        } catch (error) {
-            console.error('Error creating PDF document:', error);
-            throw error;
-        }
-    },
 
-    async getPDFUrl(fileId: string): Promise<string> {
-        try {
-            const response = await storage.getFileView(
-                BUCKET_IDS.MATH_PDFS,
-                fileId
-            );
-            return response.href;
+            return document;
         } catch (error) {
-            console.error('Error getting PDF URL:', error);
-            throw error;
-        }
-    },
-
-    async getPDFsByTopic(topicId: string): Promise<PDFDocument[]> {
-        try {
-            const response = await databases.listDocuments(
-                DATABASE_IDS.MATH_REVISION,
-                COLLECTION_IDS.PDFS,
-                [
-                    `topicId=${topicId}`
-                ]
-            );
-            return response.documents as PDFDocument[];
-        } catch (error) {
-            console.error('Error getting PDFs by topic:', error);
-            throw error;
+            console.error('Error uploading PDF:', error);
+            throw new Error(error instanceof Error ? error.message : 'Failed to upload PDF');
         }
     },
 
     async getPDFsBySubtopic(subtopicId: string): Promise<PDFDocument[]> {
         try {
-            const response = await databases.listDocuments(
+            const response = await databases.listDocuments<PDFDocument>(
                 DATABASE_IDS.MATH_REVISION,
                 COLLECTION_IDS.PDFS,
                 [
-                    `subtopicId=${subtopicId}`
+                    Query.equal('subtopicId', subtopicId)
                 ]
             );
-            return response.documents as PDFDocument[];
+            return response.documents;
         } catch (error) {
-            console.error('Error getting PDFs by subtopic:', error);
-            throw error;
+            console.error('Error fetching PDFs:', error);
+            throw new Error(error instanceof Error ? error.message : 'Failed to fetch PDFs');
+        }
+    },
+
+    async deletePDF(documentId: string, fileId: string): Promise<void> {
+        try {
+            await Promise.all([
+                databases.deleteDocument(
+                    DATABASE_IDS.MATH_REVISION,
+                    COLLECTION_IDS.PDFS,
+                    documentId
+                ),
+                storage.deleteFile(
+                    BUCKET_IDS.MATH_PDFS,
+                    fileId
+                )
+            ]);
+        } catch (error) {
+            console.error('Error deleting PDF:', error);
+            throw new Error(error instanceof Error ? error.message : 'Failed to delete PDF');
+        }
+    },
+
+    getPDFViewURL(fileId: string): string {
+        try {
+            return storage.getFileView(BUCKET_IDS.MATH_PDFS, fileId).toString();
+        } catch (error) {
+            console.error('Error getting PDF view URL:', error);
+            throw new Error(error instanceof Error ? error.message : 'Failed to get PDF view URL');
         }
     }
 }; 

@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { mathCurriculum } from '../data/curriculum';
 import { motion } from 'framer-motion';
-
-interface SubtopicItem {
-  id: string;
-  title: string;
-  content: string;
-}
+import topics from '../data/topics';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +27,7 @@ const Navbar: React.FC = () => {
   const mathSymbols = ['π', '∑', '∫', '√', '∞', 'θ', 'Δ', '≡'];
   
   return (
-    <nav className={`sticky top-0 z-50 transition-all duration-300 ${
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       scrolled 
         ? 'bg-white text-indigo-900 shadow-md' 
         : 'bg-indigo-900 text-white'
@@ -68,7 +62,7 @@ const Navbar: React.FC = () => {
               }`}>
                 <span className="font-serif">∫</span>
               </div>
-              <span className="hidden sm:inline">Form 3 Math Revision</span>
+              <span className="hidden sm:inline">Form 3 Mathematics</span>
               <span className="sm:hidden">Math</span>
             </Link>
           </div>
@@ -79,58 +73,33 @@ const Navbar: React.FC = () => {
               Home
             </NavLink>
             
-            <NavDropdown 
-              to="/topic/number-algebra" 
-              title="Number & Algebra" 
-              items={mathCurriculum[0].topics.map(topic => ({
-                id: topic.id,
-                title: topic.title,
-                content: topic.content
-              }))}
-              scrolled={scrolled}
-              color="blue"
-            />
+            <NavLink to="/topic/number-systems" scrolled={scrolled} color="blue">
+              Number Systems
+            </NavLink>
             
-            <NavDropdown 
-              to="/topic/geometry-measurement" 
-              title="Geometry & Measurement" 
-              items={mathCurriculum[1].topics.map(topic => ({
-                id: topic.id,
-                title: topic.title,
-                content: topic.content
-              }))}
-              scrolled={scrolled}
-              color="green"
-            />
+            <NavLink to="/topic/algebraic-manipulation" scrolled={scrolled} color="green">
+              Algebraic Manipulation
+            </NavLink>
             
-            <NavDropdown 
-              to="/topic/trigonometry" 
-              title="Trigonometry" 
-              items={mathCurriculum[2].topics.map(topic => ({
-                id: topic.id,
-                title: topic.title,
-                content: topic.content
-              }))}
-              scrolled={scrolled}
-              color="purple"
-            />
+            <NavLink to="/topic/mensuration" scrolled={scrolled} color="emerald">
+              Mensuration
+            </NavLink>
+            
+            <NavLink to="/topic/linear-patterns" scrolled={scrolled} color="indigo">
+              Linear Patterns
+            </NavLink>
+            
+            <NavLink to="/topic/angles" scrolled={scrolled} color="amber">
+              Angles
+            </NavLink>
+            
+            <NavLink to="/topic/trigonometry" scrolled={scrolled} color="purple">
+              Trigonometry
+            </NavLink>
             
             <NavLink to="/resources" scrolled={scrolled}>
               Resources
             </NavLink>
-            
-            <div className="ml-2">
-              <Link 
-                to="/teacher-admin" 
-                className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  scrolled 
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
-                    : 'bg-white text-indigo-900 hover:bg-indigo-50'
-                }`}
-              >
-                Staff Access
-              </Link>
-            </div>
           </div>
           
           {/* Mobile menu button */}
@@ -168,22 +137,13 @@ const Navbar: React.FC = () => {
           >
             <div className="py-2 space-y-1">
               <MobileNavLink to="/" scrolled={scrolled}>Home</MobileNavLink>
-              <MobileNavLink to="/topic/number-algebra" scrolled={scrolled}>Number & Algebra</MobileNavLink>
-              <MobileNavLink to="/topic/geometry-measurement" scrolled={scrolled}>Geometry & Measurement</MobileNavLink>
+              <MobileNavLink to="/topic/number-systems" scrolled={scrolled}>Number Systems</MobileNavLink>
+              <MobileNavLink to="/topic/algebraic-manipulation" scrolled={scrolled}>Algebraic Manipulation</MobileNavLink>
+              <MobileNavLink to="/topic/mensuration" scrolled={scrolled}>Mensuration</MobileNavLink>
+              <MobileNavLink to="/topic/linear-patterns" scrolled={scrolled}>Linear Patterns</MobileNavLink>
+              <MobileNavLink to="/topic/angles" scrolled={scrolled}>Angles</MobileNavLink>
               <MobileNavLink to="/topic/trigonometry" scrolled={scrolled}>Trigonometry</MobileNavLink>
               <MobileNavLink to="/resources" scrolled={scrolled}>Resources</MobileNavLink>
-              <div className="px-4 py-2">
-                <Link 
-                  to="/teacher-admin" 
-                  className={`block w-full text-center py-2 rounded-md transition-colors ${
-                    scrolled 
-                      ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
-                      : 'bg-white text-indigo-900 hover:bg-indigo-50'
-                  }`}
-                >
-                  Staff Access
-                </Link>
-              </div>
             </div>
           </motion.div>
         )}
@@ -196,21 +156,46 @@ interface NavLinkProps {
   to: string;
   children: React.ReactNode;
   scrolled: boolean;
+  color?: string;
 }
 
 // Desktop navigation link
-const NavLink: React.FC<NavLinkProps> = ({ to, children, scrolled }) => {
+const NavLink: React.FC<NavLinkProps> = ({ to, children, scrolled, color }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
+  
+  const getActiveColor = () => {
+    if (!isActive) return '';
+    
+    switch(color) {
+      case 'blue': return scrolled ? 'bg-blue-100 text-blue-800' : 'bg-blue-800 text-white';
+      case 'green': return scrolled ? 'bg-green-100 text-green-800' : 'bg-green-800 text-white';
+      case 'emerald': return scrolled ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-800 text-white';
+      case 'indigo': return scrolled ? 'bg-indigo-100 text-indigo-800' : 'bg-indigo-800 text-white';
+      case 'amber': return scrolled ? 'bg-amber-100 text-amber-800' : 'bg-amber-800 text-white';
+      case 'purple': return scrolled ? 'bg-purple-100 text-purple-800' : 'bg-purple-800 text-white';
+      default: return scrolled ? 'bg-indigo-100 text-indigo-900' : 'bg-indigo-800 text-white';
+    }
+  };
+  
+  const getUnderlineColor = () => {
+    switch(color) {
+      case 'blue': return 'bg-blue-600';
+      case 'green': return 'bg-green-600';
+      case 'emerald': return 'bg-emerald-600';
+      case 'indigo': return 'bg-indigo-600';
+      case 'amber': return 'bg-amber-600';
+      case 'purple': return 'bg-purple-600';
+      default: return 'bg-indigo-600';
+    }
+  };
   
   return (
     <Link 
       to={to} 
       className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors ${
         isActive 
-          ? scrolled 
-            ? 'bg-indigo-100 text-indigo-900' 
-            : 'bg-indigo-800 text-white'
+          ? getActiveColor()
           : scrolled 
             ? 'hover:bg-indigo-50' 
             : 'hover:bg-indigo-800'
@@ -219,7 +204,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children, scrolled }) => {
       {children}
       {isActive && (
         <motion.div 
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-current mx-3"
+          className={`absolute bottom-0 left-0 right-0 h-0.5 mx-3 ${getUnderlineColor()}`}
           layoutId="navbar-underline"
         />
       )}
@@ -247,130 +232,6 @@ const MobileNavLink: React.FC<NavLinkProps> = ({ to, children, scrolled }) => {
     >
       {children}
     </Link>
-  );
-};
-
-interface NavDropdownProps {
-  to: string;
-  title: string;
-  items: SubtopicItem[];
-  scrolled: boolean;
-  color: 'blue' | 'green' | 'purple';
-}
-
-type ColorMapType = {
-  [key in 'blue' | 'green' | 'purple']: {
-    bg: string;
-    hover: string;
-    text: string;
-  }
-};
-
-// Navigation dropdown for desktop
-const NavDropdown: React.FC<NavDropdownProps> = ({ to, title, items, scrolled, color }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const location = useLocation();
-  const isActive = location.pathname === to;
-  
-  const colorMap: ColorMapType = {
-    blue: {
-      bg: 'bg-blue-50',
-      hover: 'hover:bg-blue-100',
-      text: 'text-blue-800'
-    },
-    green: {
-      bg: 'bg-green-50',
-      hover: 'hover:bg-green-100',
-      text: 'text-green-800'
-    },
-    purple: {
-      bg: 'bg-purple-50',
-      hover: 'hover:bg-purple-100',
-      text: 'text-purple-800'
-    }
-  };
-  
-  const themeColor = colorMap[color] || colorMap.blue;
-  
-  return (
-    <div 
-      className="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Link 
-        to={to} 
-        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-          isActive 
-            ? scrolled 
-              ? 'bg-indigo-100 text-indigo-900' 
-              : 'bg-indigo-800 text-white'
-            : scrolled 
-              ? 'hover:bg-indigo-50' 
-              : 'hover:bg-indigo-800'
-        }`}
-      >
-        {title}
-        <svg 
-          className={`ml-1 w-4 h-4 transition-transform ${isHovered ? 'rotate-180' : ''}`} 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24" 
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </Link>
-      
-      {isHovered && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-          className={`absolute left-0 mt-1 w-64 rounded-md shadow-lg z-20 ${scrolled ? themeColor.bg : 'bg-indigo-900'}`}
-        >
-          <div className="py-1 rounded-md ring-1 ring-black ring-opacity-5 text-sm">
-            {/* Math symbols decoration */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {['∫', '∑', '∞', '≡'].map((symbol, i) => (
-                <span 
-                  key={i}
-                  className={`absolute opacity-5 select-none ${scrolled ? themeColor.text : 'text-white'}`}
-                  style={{
-                    top: `${20 + i * 25}%`,
-                    right: '10%',
-                    fontSize: '1.5rem',
-                    transform: `rotate(${i * 45}deg)`
-                  }}
-                >
-                  {symbol}
-                </span>
-              ))}
-            </div>
-            
-            <div className="relative p-2 max-h-60 overflow-y-auto">
-              {items.map((item) => (
-                <Link 
-                  key={item.id} 
-                  to={`/subtopic/${item.id}`}
-                  className={`block px-3 py-2 rounded-md ${
-                    scrolled 
-                      ? `${themeColor.text} ${themeColor.hover}` 
-                      : 'text-white hover:bg-indigo-800'
-                  }`}
-                >
-                  <p className="font-medium">{item.title}</p>
-                  <p className={`text-xs truncate ${scrolled ? 'text-gray-600' : 'text-indigo-200'}`}>
-                    {item.content}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </div>
   );
 };
 

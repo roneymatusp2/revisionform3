@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useAnimation, useInView, Variants } from 'framer-motion';
+import TopicCard from '../components/TopicCard';
 import topics from '../data/topics';
 import { Topic, Subtopic } from '../data/topics';
 
 // Animated Mathematical Features
+// Enhanced Mathematical Hero with interactive animations
 const MathematicalHero: React.FC = () => {
   // Parallax effect state
   const [scrollY, setScrollY] = useState(0);
@@ -19,66 +21,180 @@ const MathematicalHero: React.FC = () => {
   }, []);
 
   // Mathematical symbols array
-  const mathSymbols = ['π', 'e', '∞', '∫', '∑', '√', 'Δ', '±', '≠', '≈', '⊂', '∪', '∩', '∀', '∃', '∇', 'φ', 'θ', 'λ', 'μ'];
+  // Enhanced mathematical symbols with categories
+  const mathSymbols = [
+    // Constants
+    { symbol: 'π', color: '#3B82F6', size: 2.2 },
+    { symbol: 'e', color: '#8B5CF6', size: 2.0 },
+    { symbol: 'i', color: '#EC4899', size: 1.8 },
+    { symbol: '∞', color: '#F59E0B', size: 2.5 },
+    // Operators
+    { symbol: '∫', color: '#10B981', size: 2.4 },
+    { symbol: '∑', color: '#6366F1', size: 2.3 },
+    { symbol: '√', color: '#F97316', size: 2.2 },
+    { symbol: 'Δ', color: '#64748B', size: 2.0 },
+    { symbol: '±', color: '#9333EA', size: 1.9 },
+    // Relations
+    { symbol: '≠', color: '#EF4444', size: 1.8 },
+    { symbol: '≈', color: '#14B8A6', size: 1.9 },
+    { symbol: '⊂', color: '#8B5CF6', size: 2.1 },
+    { symbol: '∪', color: '#06B6D4', size: 2.0 },
+    { symbol: '∩', color: '#0EA5E9', size: 2.0 },
+    // Quantifiers
+    { symbol: '∀', color: '#22C55E', size: 2.2 },
+    { symbol: '∃', color: '#A855F7', size: 2.1 },
+    // Greek letters
+    { symbol: '∇', color: '#EC4899', size: 2.0 },
+    { symbol: 'φ', color: '#3B82F6', size: 1.9 },
+    { symbol: 'θ', color: '#EAB308', size: 2.0 },
+    { symbol: 'λ', color: '#14B8A6', size: 1.8 },
+    { symbol: 'μ', color: '#F97316', size: 1.7 }
+  ];
   
-  // Generate random positions for floating elements
+  // Generate enhanced floating elements with improved positioning and behavior
   const floatingElements = useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
-      symbol: mathSymbols[Math.floor(Math.random() * mathSymbols.length)],
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 2 + 1,
-      speed: Math.random() * 0.15 + 0.05,
-      delay: Math.random() * 1,
-      rotation: Math.random() * 360,
-      rotationSpeed: (Math.random() - 0.5) * 0.5
-    }));
+    return Array.from({ length: 35 }, (_, i) => {
+      const symbolObj = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+      // Create a more structured distribution across the screen
+      const section = Math.floor(i / 7); // 0 to 4 for 5 screen segments
+      
+      return {
+        symbol: symbolObj.symbol,
+        x: (section * 20) + (Math.random() * 18) + 1, // Distribute across sections
+        y: Math.random() * 100,
+        size: symbolObj.size * (0.7 + Math.random() * 0.5), // Use predefined size with variation
+        speed: Math.random() * 0.15 + 0.05,
+        delay: Math.random() * 1,
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 0.5,
+        color: symbolObj.color,
+        pulseDelay: Math.random() * 5,
+        pulseSpeed: 2 + Math.random() * 3
+      };
+    });
   }, [mathSymbols]);
 
   return (
-    <div className="relative w-full h-[550px] overflow-hidden bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
+    <div className="relative w-full h-[600px] overflow-hidden bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
       {/* Grid Background - Graph Paper Effect */}
       <div 
-        className="absolute inset-0 opacity-10"
+        className="absolute inset-0 opacity-15"
         style={{
-          backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px)',
           backgroundSize: '20px 20px',
           transform: `translateY(${scrollY * 0.1}px)`
         }}
       />
       
-      {/* Golden Ratio Spiral */}
+      {/* Enhanced Golden Ratio Spiral with animation */}
       <motion.div 
-        className="absolute opacity-10 right-20 bottom-20 w-[300px] h-[300px]"
+        className="absolute opacity-15 right-20 bottom-20 w-[350px] h-[350px]"
         initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
-        animate={{ opacity: 0.1, scale: 1, rotate: 360 }}
+        animate={{ opacity: 0.15, scale: 1, rotate: 360 }}
         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
         style={{ translateY: scrollY * -0.2 }}
       >
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M50,0 A50,50 0 0,1 100,50 A50,50 0 0,1 50,100 A50,50 0 0,1 0,50 A50,50 0 0,1 50,0 Z" stroke="white" strokeWidth="0.5" />
-          <path d="M50,50 A50,50 0 0,0 100,50 A50,50 0 0,0 50,0" stroke="white" strokeWidth="0.5" />
-          <path d="M50,50 A30.9,30.9 0 0,0 80.9,19.1" stroke="white" strokeWidth="0.5" />
-          <path d="M50,50 A19.1,19.1 0 0,1 69.1,69.1" stroke="white" strokeWidth="0.5" />
-          <path d="M50,50 A11.8,11.8 0 0,0 38.2,61.8" stroke="white" strokeWidth="0.5" />
-          <path d="M50,50 A7.3,7.3 0 0,1 42.7,42.7" stroke="white" strokeWidth="0.5" />
-          <path d="M50,50 A4.5,4.5 0 0,0 54.5,45.5" stroke="white" strokeWidth="0.5" />
-          <path d="M50,50 A2.8,2.8 0 0,1 52.8,52.8" stroke="white" strokeWidth="0.5" />
+          {/* Outer circle */}
+          <motion.path 
+            d="M50,0 A50,50 0 0,1 100,50 A50,50 0 0,1 50,100 A50,50 0 0,1 0,50 A50,50 0 0,1 50,0 Z" 
+            stroke="white" 
+            strokeWidth="0.5" 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 3, delay: 0.5 }}
+          />
+          
+          {/* First spiral segment */}
+          <motion.path 
+            d="M50,50 A50,50 0 0,0 100,50 A50,50 0 0,0 50,0" 
+            stroke="white" 
+            strokeWidth="0.5" 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 2, delay: 1.5 }}
+          />
+          
+          {/* Additional spiral segments with sequential appearance */}
+          <motion.path 
+            d="M50,50 A30.9,30.9 0 0,0 80.9,19.1" 
+            stroke="white" 
+            strokeWidth="0.5" 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.5, delay: 2.5 }}
+          />
+          <motion.path 
+            d="M50,50 A19.1,19.1 0 0,1 69.1,69.1" 
+            stroke="white" 
+            strokeWidth="0.5" 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.3, delay: 3.3 }}
+          />
+          <motion.path 
+            d="M50,50 A11.8,11.8 0 0,0 38.2,61.8" 
+            stroke="white" 
+            strokeWidth="0.5" 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.1, delay: 4 }}
+          />
+          <motion.path 
+            d="M50,50 A7.3,7.3 0 0,1 42.7,42.7" 
+            stroke="white" 
+            strokeWidth="0.5" 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.9, delay: 4.6 }}
+          />
+          <motion.path 
+            d="M50,50 A4.5,4.5 0 0,0 54.5,45.5" 
+            stroke="white" 
+            strokeWidth="0.5" 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.7, delay: 5.1 }}
+          />
+          <motion.path 
+            d="M50,50 A2.8,2.8 0 0,1 52.8,52.8" 
+            stroke="white" 
+            strokeWidth="0.5" 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.5, delay: 5.5 }}
+          />
+          
+          {/* Golden ratio symbol */}
+          <motion.text 
+            x="40" 
+            y="30" 
+            fontSize="6" 
+            fill="white" 
+            opacity="0.8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.8 }}
+            transition={{ duration: 1, delay: 6 }}
+          >
+            φ = 1.618...
+          </motion.text>
         </svg>
       </motion.div>
       
-      {/* Floating Mathematical Symbols with Parallax Effect */}
+      {/* Enhanced Floating Mathematical Symbols with Parallax and Glow Effects */}
       {floatingElements.map((el, i) => (
         <motion.div
           key={i}
-          className="absolute text-white font-serif select-none"
+          className="absolute font-serif select-none"
           initial={{ 
             x: `${el.x}%`, 
             y: `${el.y}%`, 
-            opacity: 0
+            opacity: 0,
+            scale: 0.5
           }}
           animate={{ 
-            opacity: [0.2, 0.5, 0.2],
+            opacity: [0.2, 0.6, 0.2],
+            scale: [1, 1.05, 1],
             rotate: [el.rotation, el.rotation + 360 * el.rotationSpeed]
           }}
           transition={{ 
@@ -86,6 +202,12 @@ const MathematicalHero: React.FC = () => {
               duration: 5 + el.delay * 3, 
               repeat: Infinity,
               ease: "easeInOut" 
+            },
+            scale: {
+              duration: el.pulseSpeed,
+              delay: el.pulseDelay,
+              repeat: Infinity,
+              ease: "easeInOut"
             },
             rotate: {
               duration: 20 + el.delay * 10,
@@ -95,7 +217,14 @@ const MathematicalHero: React.FC = () => {
           }}
           style={{
             fontSize: `${el.size}rem`,
-            transform: `translate(${el.x}%, ${el.y}%) translateY(${scrollY * -el.speed}px)`
+            color: el.color,
+            transform: `translate(${el.x}%, ${el.y}%) translateY(${scrollY * -el.speed}px)`,
+            textShadow: `0 0 5px ${el.color}33, 0 0 15px ${el.color}22`
+          }}
+          whileHover={{
+            scale: 1.2,
+            opacity: 0.8,
+            transition: { duration: 0.2 }
           }}
         >
           {el.symbol}
@@ -167,109 +296,204 @@ const MathematicalHero: React.FC = () => {
   );
 };
 
-// Quadratic Formula Animation Component
+// Enhanced Quadratic Formula Animation Component with interactive highlights
 const QuadraticFormula: React.FC = () => {
   const [raizWidth, setRaizWidth] = useState(0);
+  const [step, setStep] = useState(0);
+  const [highlight, setHighlight] = useState('');
   
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setRaizWidth(100);
-    }, 1500);
+    // Initial animation for the square root line
+    const timer1 = setTimeout(() => setRaizWidth(100), 1500);
     
-    return () => clearTimeout(timer);
+    // Highlight different parts of the formula sequentially
+    const timer2 = setTimeout(() => setHighlight('b'), 3000);
+    const timer3 = setTimeout(() => setHighlight('a'), 4000);
+    const timer4 = setTimeout(() => setHighlight('c'), 5000);
+    const timer5 = setTimeout(() => setHighlight('discriminant'), 6000);
+    const timer6 = setTimeout(() => setHighlight(''), 7000);
+    
+    // Reset animation
+    const timer7 = setTimeout(() => {
+      setStep(1);
+      setRaizWidth(0);
+      setTimeout(() => setRaizWidth(100), 500);
+    }, 8000);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+      clearTimeout(timer5);
+      clearTimeout(timer6);
+      clearTimeout(timer7);
+    };
   }, []);
   
   return (
     <motion.div 
-      className="flex items-center justify-center text-xl md:text-3xl text-white font-serif"
+      className="flex flex-col items-center justify-center text-xl md:text-3xl text-white font-serif"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1, delay: 0.6 }}
     >
-      <motion.span 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.7 }}
+      {/* Equation name with glow effect */}
+      <motion.div
+        className="text-base md:text-lg mb-2 text-indigo-200"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        style={{
+          textShadow: '0 0 10px rgba(165, 180, 252, 0.5)'
+        }}
       >
-        x = 
-      </motion.span>
-      <motion.span 
-        className="mx-2 flex items-center"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 1.0 }}
-      >
-        <span className="flex flex-col items-center">
-          <span className="relative">
-            {/* Numerator */}
-            <motion.div
-              className="flex items-center whitespace-nowrap relative z-10 px-1"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1.3 }}
-            >
-              <motion.span
+        The Quadratic Formula
+      </motion.div>
+      
+      <div className="flex items-center">
+        <motion.span 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+        >
+          x = 
+        </motion.span>
+        <motion.span 
+          className="mx-2 flex items-center"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 1.0 }}
+        >
+          <span className="flex flex-col items-center">
+            <span className="relative">
+              {/* Numerator */}
+              <motion.div
+                className="flex items-center whitespace-nowrap relative z-10 px-1"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 1.3 }}
+                transition={{ duration: 0.6, delay: 1.3 }}
               >
-                -b ± 
-              </motion.span>
-              
-              {/* Square root symbol with animation */}
-              <div className="relative inline-flex">
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 1.6 }}
-                  className="text-indigo-200 mr-0.5"
+                  transition={{ duration: 0.3, delay: 1.3 }}
+                  style={{
+                    color: highlight === 'b' ? '#93C5FD' : 'white',
+                    textShadow: highlight === 'b' ? '0 0 10px rgba(147, 197, 253, 0.8)' : 'none'
+                  }}
                 >
-                  √
+                  -b
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 1.3 }}
+                >
+                  {' ± '}
                 </motion.span>
                 
-                {/* Content inside the root with a growing line on top */}
-                <span className="relative inline-block">
+                {/* Square root symbol with enhanced animation */}
+                <div className="relative inline-flex">
                   <motion.span
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 1.9 }}
+                    transition={{ duration: 0.3, delay: 1.6 }}
+                    className="text-indigo-200 mr-0.5"
                   >
-                    b² - 4ac
+                    √
                   </motion.span>
                   
-                  {/* Root line that extends */}
-                  <motion.span 
-                    className="absolute left-0 top-0 h-0.5 bg-indigo-200" 
-                    initial={{ width: "0%" }}
-                    animate={{ width: `${raizWidth}%` }}
-                    transition={{ duration: 1, delay: 2.0 }}
-                    style={{ marginTop: "-1px" }}
-                  />
-                </span>
-              </div>
-            </motion.div>
-        
-            
-            {/* Division line */}
-            <motion.div 
-              className="h-0.5 bg-indigo-200 my-1"
-              initial={{ width: 0 }}
-              animate={{ width: '100%' }}
-              transition={{ duration: 0.8, delay: 2.2 }}
-            />
-            
-            {/* Denominator */}
-            <motion.div
-              className="text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 2.5 }}
-            >
-              2a
-            </motion.div>
+                  {/* Content inside the root with a growing line on top */}
+                  <span className="relative inline-block">
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3, delay: 1.9 }}
+                    >
+                      <span 
+                        style={{
+                          color: highlight === 'b' ? '#93C5FD' : 'white',
+                          textShadow: highlight === 'b' ? '0 0 10px rgba(147, 197, 253, 0.8)' : 'none'
+                        }}
+                      >
+                        b²
+                      </span>
+                      {' - '}
+                      <span 
+                        style={{
+                          color: (highlight === '4' || highlight === 'discriminant') ? '#93C5FD' : 'white',
+                          textShadow: (highlight === '4' || highlight === 'discriminant') ? '0 0 10px rgba(147, 197, 253, 0.8)' : 'none'
+                        }}
+                      >
+                        4
+                      </span>
+                      <span 
+                        style={{
+                          color: highlight === 'a' ? '#93C5FD' : 'white',
+                          textShadow: highlight === 'a' ? '0 0 10px rgba(147, 197, 253, 0.8)' : 'none'
+                        }}
+                      >
+                        a
+                      </span>
+                      <span 
+                        style={{
+                          color: highlight === 'c' ? '#93C5FD' : 'white',
+                          textShadow: highlight === 'c' ? '0 0 10px rgba(147, 197, 253, 0.8)' : 'none'
+                        }}
+                      >
+                        c
+                      </span>
+                    </motion.span>
+                    
+                    {/* Root line that extends with enhanced visual */}
+                    <motion.span 
+                      className="absolute left-0 top-0 h-0.5 bg-gradient-to-r from-indigo-200 via-purple-200 to-indigo-200" 
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${raizWidth}%` }}
+                      transition={{ duration: 1, delay: 2.0 }}
+                      style={{ marginTop: "-1px" }}
+                    />
+                  </span>
+                </div>
+              </motion.div>
+          
+              
+              {/* Division line with gradient */}
+              <motion.div 
+                className="h-0.5 bg-gradient-to-r from-indigo-300 via-purple-200 to-indigo-300 my-1"
+                initial={{ width: 0 }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 0.8, delay: 2.2 }}
+              />
+              
+              {/* Denominator */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 2.5 }}
+                style={{
+                  color: highlight === 'a' ? '#93C5FD' : 'white',
+                  textShadow: highlight === 'a' ? '0 0 10px rgba(147, 197, 253, 0.8)' : 'none'
+                }}
+              >
+                2a
+              </motion.div>
+            </span>
           </span>
-        </span>
-      </motion.span>
+        </motion.span>
+      </div>
+      
+      {/* Small explanation text that appears after the formula is complete */}
+      <motion.div
+        className="text-xs md:text-sm mt-2 text-indigo-200 max-w-xs text-center"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: step === 0 ? 0 : 1, y: step === 0 ? 10 : 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        For any quadratic equation ax² + bx + c = 0
+      </motion.div>
     </motion.div>
   );
 };
@@ -280,7 +504,7 @@ interface TopicCardProps {
   index: number;
 }
 
-const TopicCard: React.FC<TopicCardProps> = ({ topic, index }) => {
+const TopicCardComponent: React.FC<TopicCardProps> = ({ topic, index }) => {
   const controls = useAnimation();
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: false });
@@ -291,30 +515,23 @@ const TopicCard: React.FC<TopicCardProps> = ({ topic, index }) => {
     }
   }, [controls, inView]);
   
-  // Topic-specific math icon components
-  const MathIcons: Record<string, React.ReactElement> = {
-    'number-algebra': (
-      <svg className="w-24 h-24 opacity-10 absolute right-4 bottom-4" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <text x="20" y="40" fontSize="24" fill="currentColor">x²</text>
-        <text x="50" y="70" fontSize="24" fill="currentColor">y</text>
-        <line x1="10" y1="50" x2="90" y2="50" stroke="currentColor" strokeWidth="2" />
-        <text x="40" y="90" fontSize="24" fill="currentColor">π</text>
-      </svg>
-    ),
-    'geometry-measurement': (
-      <svg className="w-24 h-24 opacity-10 absolute right-4 bottom-4" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" strokeWidth="2" />
-        <line x1="10" y1="90" x2="90" y2="10" stroke="currentColor" strokeWidth="2" />
-        <polyline points="10,10 30,40 70,20 90,50" fill="none" stroke="currentColor" strokeWidth="2" />
-      </svg>
-    ),
-    'trigonometry': (
-      <svg className="w-24 h-24 opacity-10 absolute right-4 bottom-4" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10,90 L90,90 L50,20 Z" fill="none" stroke="currentColor" strokeWidth="2" />
-        <text x="40" y="75" fontSize="14" fill="currentColor">sin θ</text>
-        <text x="65" y="50" fontSize="14" fill="currentColor">cos θ</text>
-      </svg>
-    )
+  // Enhanced topic-specific animations
+  const [showAnimation, setShowAnimation] = useState(false);
+  
+  useEffect(() => {
+    if (inView) {
+      setShowAnimation(true);
+    }
+  }, [inView]);
+  
+  // Topic-specific components with interactive animations
+  const MathIcons: Record<string, React.ReactElement | null> = {
+    'number-systems': null,
+    'algebraic-manipulation': null,
+    'mensuration': null,
+    'linear-patterns': null,
+    'angles': null,
+    'trigonometry': null
   };
   
   const cardVariants: Variants = {
@@ -331,52 +548,58 @@ const TopicCard: React.FC<TopicCardProps> = ({ topic, index }) => {
       transition={{ duration: 0.5, delay: 0.1 * index }}
       className={`bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 relative`}
       whileHover={{
-        scale: 1.02,
-        transition: { duration: 0.2 }
+        scale: 1.05,
+        transition: { duration: 0.3 },
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
       }}
     >
-      <div className={`h-3 ${
-        topic.id === 'number-algebra' ? 'bg-blue-500' : 
-        topic.id === 'geometry-measurement' ? 'bg-green-500' : 
+      <div className={`h-4 ${
+        topic.$id === 'number-systems' ? 'bg-blue-500' : 
+        topic.$id === 'algebraic-manipulation' ? 'bg-green-500' :
+        topic.$id === 'mensuration' ? 'bg-emerald-500' :
+        topic.$id === 'linear-patterns' ? 'bg-indigo-500' :
+        topic.$id === 'angles' ? 'bg-amber-500' :
         'bg-purple-500'
       }`}></div>
       
       <div className="p-6 relative z-10">
         <h2 className={`text-2xl font-bold mb-4 ${
-          topic.id === 'number-algebra' ? 'text-blue-800' : 
-          topic.id === 'geometry-measurement' ? 'text-green-800' : 
+          topic.$id === 'number-algebra' ? 'text-blue-800' : 
+          topic.$id === 'geometry-measurement' ? 'text-green-800' : 
           'text-purple-800'
         }`}>
-          {topic.title}
+          {topic.name}
         </h2>
         
-        <p className="text-gray-700 mb-6">{topic.description}</p>
+        <p className="text-gray-700 mb-4">Explore all subtopics and resources.</p>
         
-        <div className="flex flex-wrap gap-2 mb-6">
-          {(topic.subtopics || []).slice(0, 3).map((subtopic: Subtopic, i: number) => (
-            <span 
+        <div className="flex flex-col gap-1 mb-6 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+          {(topic.subtopics || []).map((subtopic: Subtopic, i: number) => (
+            <Link 
               key={i} 
-              className={`text-xs px-2 py-1 rounded-full ${
-                topic.id === 'number-algebra' ? 'bg-blue-100 text-blue-800' : 
-                topic.id === 'geometry-measurement' ? 'bg-green-100 text-green-800' : 
-                'bg-purple-100 text-purple-800'
-              }`}
+              to={`/subtopic/${subtopic.$id}`}
+              className={`text-sm px-3 py-1.5 rounded-md ${
+                topic.$id === 'number-systems' ? 'bg-blue-50 text-blue-800 hover:bg-blue-100' : 
+                topic.$id === 'algebraic-manipulation' ? 'bg-green-50 text-green-800 hover:bg-green-100' :
+                topic.$id === 'mensuration' ? 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100' :
+                topic.$id === 'linear-patterns' ? 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100' :
+                topic.$id === 'angles' ? 'bg-amber-50 text-amber-800 hover:bg-amber-100' :
+                'bg-purple-50 text-purple-800 hover:bg-purple-100'
+              } transition-colors duration-200`}
             >
-              {subtopic.title}
-            </span>
+              {subtopic.name}
+            </Link>
           ))}
-          {(topic.subtopics || []).length > 3 && (
-            <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800">
-              +{(topic.subtopics || []).length - 3} more
-            </span>
-          )}
         </div>
         
         <Link
-          to={`/topic/${topic.id}`}
+          to={`/topic/${topic.$id}`}
           className={`inline-flex items-center px-6 py-2 rounded-lg text-white font-medium transition-colors ${
-            topic.id === 'number-algebra' ? 'bg-blue-600 hover:bg-blue-700' : 
-            topic.id === 'geometry-measurement' ? 'bg-green-600 hover:bg-green-700' : 
+            topic.$id === 'number-systems' ? 'bg-blue-600 hover:bg-blue-700' : 
+            topic.$id === 'algebraic-manipulation' ? 'bg-green-600 hover:bg-green-700' :
+            topic.$id === 'mensuration' ? 'bg-emerald-600 hover:bg-emerald-700' :
+            topic.$id === 'linear-patterns' ? 'bg-indigo-600 hover:bg-indigo-700' :
+            topic.$id === 'angles' ? 'bg-amber-600 hover:bg-amber-700' :
             'bg-purple-600 hover:bg-purple-700'
           }`}
         >
@@ -389,19 +612,28 @@ const TopicCard: React.FC<TopicCardProps> = ({ topic, index }) => {
       
       {/* Topic-specific mathematical visual */}
       <div className={`absolute inset-0 pointer-events-none ${
-        topic.id === 'number-algebra' ? 'text-blue-800' : 
-        topic.id === 'geometry-measurement' ? 'text-green-800' : 
+        topic.$id === 'number-systems' ? 'text-blue-800' : 
+        topic.$id === 'algebraic-manipulation' ? 'text-green-800' :
+        topic.$id === 'mensuration' ? 'text-emerald-800' :
+        topic.$id === 'linear-patterns' ? 'text-indigo-800' :
+        topic.$id === 'angles' ? 'text-amber-800' :
         'text-purple-800'
       }`}>
-        {MathIcons[topic.id]}
+        {MathIcons[topic.$id] || null}
       </div>
     </motion.div>
   );
 };
 
-// Daily Challenge Component
+// Enhanced Daily Challenge with interactive steps and visual solution
 const DailyChallenge: React.FC = () => {
   const [showSolution, setShowSolution] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = 3;
+  
+  // Navigate through solution steps
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 0));
   
   return (
     <motion.div 
@@ -410,15 +642,42 @@ const DailyChallenge: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.8 }}
     >
-      <h3 className="text-xl font-bold text-indigo-900 mb-3">Today's Math Challenge</h3>
-      <p className="text-gray-700 mb-4">
-        If the sum of the roots of the quadratic equation x² + bx + 15 = 0 is equal to -6, find the value of b.
-      </p>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-xl font-bold text-indigo-900">Today's Math Challenge</h3>
+        
+        <div className="flex items-center space-x-1">
+          <motion.div 
+            className="w-2 h-2 rounded-full bg-indigo-600 opacity-60"
+            animate={{ opacity: Math.random() * 0.4 + 0.6 }}
+            transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse' }}
+          />
+          <motion.div
+            className="w-2 h-2 rounded-full bg-indigo-600 opacity-60"
+            animate={{ opacity: Math.random() * 0.4 + 0.6 }}
+            transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse', delay: 0.3 }}
+          />
+          <motion.div
+            className="w-2 h-2 rounded-full bg-indigo-600 opacity-60"
+            animate={{ opacity: Math.random() * 0.4 + 0.6 }}
+            transition={{ duration: 1.8, repeat: Infinity, repeatType: 'reverse', delay: 0.6 }}
+          />
+        </div>
+      </div>
+      
+      <div className="bg-white rounded-lg p-4 shadow-sm border border-indigo-50">
+        <p className="text-gray-700 mb-2 font-medium">
+          If the sum of the roots of the quadratic equation x² + bx + 15 = 0 is equal to -6, find the value of b.
+        </p>
+        
+        <div className="text-gray-500 text-sm italic">
+          Cambridge IGCSE Mathematics - Quadratic Equations
+        </div>
+      </div>
       
       <div className="flex flex-wrap gap-4 mt-4">
         <button
           onClick={() => setShowSolution(!showSolution)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
         >
           {showSolution ? "Hide Solution" : "View Solution"}
         </button>
@@ -431,18 +690,129 @@ const DailyChallenge: React.FC = () => {
           animate={{ opacity: 1, height: "auto" }}
           transition={{ duration: 0.3 }}
         >
-          <p className="text-indigo-800 font-medium">Solution:</p>
-          <p className="text-gray-700 mt-2">
-            For a quadratic equation ax² + bx + c = 0, the sum of roots is equal to -b/a.<br />
-            Given equation: x² + bx + 15 = 0 (where a = 1)<br />
-            Sum of roots = -b/1 = -6<br />
-            Therefore, b = 6
-          </p>
+          <div className="mb-3 flex justify-between items-center">
+            <p className="text-indigo-800 font-medium text-lg">Solution:</p>
+            <div className="flex space-x-2">
+              <button 
+                onClick={prevStep}
+                disabled={currentStep === 0}
+                className={`p-1 rounded ${currentStep === 0 ? 'text-gray-400' : 'text-indigo-600 hover:bg-indigo-50'}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+              <span className="text-sm text-gray-600">{currentStep + 1}/{totalSteps + 1}</span>
+              <button 
+                onClick={nextStep}
+                disabled={currentStep === totalSteps}
+                className={`p-1 rounded ${currentStep === totalSteps ? 'text-gray-400' : 'text-indigo-600 hover:bg-indigo-50'}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 border border-indigo-100">
+            {currentStep === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-gray-700">
+                  For any quadratic equation in the form ax² + bx + c = 0, we can use Vieta's formulas to relate the coefficients to the roots.
+                </p>
+                <div className="mt-2 font-medium text-indigo-800">
+                  If the roots are α and β:
+                </div>
+                <div className="mt-1 flex flex-col items-center text-center py-2">
+                  <div>α + β = -b/a</div>
+                  <div>α × β = c/a</div>
+                </div>
+              </motion.div>
+            )}
+            
+            {currentStep === 1 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-gray-700">
+                  Looking at our equation: x² + bx + 15 = 0
+                </p>
+                <div className="mt-2">
+                  <div className="font-medium">We can identify:</div>
+                  <ul className="list-disc list-inside mt-1 ml-2 space-y-1">
+                    <li>a = 1 (coefficient of x²)</li>
+                    <li>b = b (coefficient of x)</li>
+                    <li>c = 15 (constant term)</li>
+                  </ul>
+                </div>
+              </motion.div>
+            )}
+            
+            {currentStep === 2 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-gray-700">
+                  We're told that the sum of the roots is -6.
+                </p>
+                <div className="mt-2 font-medium">
+                  Using the formula from Vieta's relations:
+                </div>
+                <div className="mt-1 flex flex-col items-center text-center py-2">
+                  <div>α + β = -b/a = -6</div>
+                  <div className="mt-1">Since a = 1:</div>
+                  <div>-b = -6</div>
+                  <div>b = 6</div>
+                </div>
+              </motion.div>
+            )}
+            
+            {currentStep === 3 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-gray-700 font-medium">
+                  Therefore, b = 6
+                </p>
+                <div className="mt-2">
+                  <div>Let's verify by finding the roots of x² + 6x + 15 = 0 using the quadratic formula:</div>
+                  <div className="mt-2 flex justify-center">
+                    <div className="text-center">
+                      <div>x = (-b ± √(b² - 4ac))/2a</div>
+                      <div>x = (-6 ± √(36 - 4×1×15))/2</div>
+                      <div>x = (-6 ± √(36 - 60))/2</div>
+                      <div>x = (-6 ± √(-24))/2</div>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    Since the discriminant b² - 4ac = -24 is negative, this quadratic has complex roots. 
+                    Their sum is still -6/1 = -6, confirming our answer.
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
         </motion.div>
       )}
     </motion.div>
   );
 };
+
 
 // Feature Card Component
 interface FeatureCardProps {
@@ -476,8 +846,7 @@ const HomePage: React.FC = () => {
 
   const filteredTopics = useMemo(() => {
     return topics.filter(topic => 
-      topic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      topic.description.toLowerCase().includes(searchTerm.toLowerCase())
+      topic.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm, mathSymbols]);
 
@@ -505,7 +874,7 @@ const HomePage: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {topics.map((topic, index) => (
-              <TopicCard key={topic.id} topic={topic} index={index} />
+              <TopicCardComponent key={topic.id} topic={topic} index={index} />
             ))}
           </div>
         </motion.div>
